@@ -51,6 +51,29 @@ These are fast, standalone unit tests (no Gazebo needed). The against-real-cell 
 (comparing the plugin's output to measured voltage from public battery datasets) is a
 separate, heavier check documented in `validation_data/`.
 
+## Parameterizing it for your own cell — read this first
+
+Where you get the OCV(SOC) curve from matters **more than the model structure**. In a
+controlled experiment on the same cell, the same test and the same fitted `R0`/`R1`/`C1`,
+changing only the source of the OCV curve moved RMSE by a factor of 2.5:
+
+| OCV curve taken from | RMSE vs. measured cell |
+|---|---|
+| A separate slow-discharge (C/20) session, recorded ~2 months earlier | 85.7 mV |
+| The rest periods **inside the same pulse-test file** | **34.3 mV** |
+
+Reproduce it with `python3 validation_data/validate_ocv_provenance.py`.
+
+**Guidance:** extract your OCV curve from the same test session as the pulse data you use to
+fit the resistances, using the relaxation voltage at the end of each rest period — not from a
+separately recorded discharge curve, and not from a datasheet plot. Cells age between
+sessions (6.6% capacity difference in the case above), and that mismatch propagates into
+every voltage the model predicts. A same-session curve gave ~34 mV RMSE on two entirely
+different cells (Panasonic 18650PF NCA and Molicel INR-21700-P42A NMC).
+
+This does **not** fix the worst-case error near end of discharge, which has a different
+cause and is documented as an open limitation.
+
 ## Try it
 
 ```bash
