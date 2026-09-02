@@ -1,0 +1,85 @@
+<?xml version="1.0" ?>
+<!--
+  Illustrative example for the paper: CVAR-UPM's own racing drone model
+  (quadrotor_cvar_racing, from aerostack2/as2_simulation_assets/as2_gazebo_assets)
+  with the ESC battery plugin attached, via SDF <include> + <plugin> override --
+  the model file itself is never modified, same "wrap, don't touch the vendored
+  model" pattern already used for the x500 in Dron_PX4_ROS2. We verified in
+  Dron_Racing_UPM/02_OTROS_REPOS_Y_GAPS.md that this exact model (and every
+  other Aerostack2 drone model) ships with NO battery plugin at all -- this is
+  literally the gap this whole plugin exists to fill.
+
+  Cell parameters: same LIR18650/NMC values as
+  Dron_PX4_ROS2/.../esc_battery_model.py (ESCParams defaults) -- the same
+  cell already used throughout this research line, not the validation
+  datasets' cells (which are physically different form factors).
+
+  Requires GZ_SIM_RESOURCE_PATH to include the as2_gazebo_assets models/
+  directory (for model://quadrotor_cvar_racing to resolve) and the plugin
+  build directory (for gz_ecm_battery_plugin.so).
+-->
+<sdf version="1.8">
+  <world name="quadrotor_cvar_racing_battery_demo">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <include>
+      <uri>model://quadrotor_cvar_racing</uri>
+      <name>racing_drone_with_battery</name>
+      <pose>0 0 0.2 0 0 0</pose>
+
+      <plugin filename="gz_ecm_battery_plugin" name="gz_ecm_battery_plugin::EscBatteryPlugin">
+        <battery_name>lir18650_esc</battery_name>
+        <capacity>2.5</capacity>
+        <r0>0.050</r0>
+        <r1>0.020</r1>
+        <c1>4000</c1>
+        <hysteresis_m>0.010</hysteresis_m>
+        <hysteresis_m0>0.003</hysteresis_m0>
+        <hysteresis_gamma>50.0</hysteresis_gamma>
+        <coulombic_efficiency>0.998</coulombic_efficiency>
+        <power_load>18.5</power_load> <!-- ~5A @ 3.7V nominal: pulso 2C, ver calculations.md -->
+        <start_draining>true</start_draining>
+        <smooth_current_tau>0.1</smooth_current_tau>
+
+        <ocv_point soc="0.00" voltage="3.00"/>
+        <ocv_point soc="0.05" voltage="3.30"/>
+        <ocv_point soc="0.10" voltage="3.45"/>
+        <ocv_point soc="0.20" voltage="3.55"/>
+        <ocv_point soc="0.30" voltage="3.62"/>
+        <ocv_point soc="0.40" voltage="3.68"/>
+        <ocv_point soc="0.50" voltage="3.72"/>
+        <ocv_point soc="0.60" voltage="3.78"/>
+        <ocv_point soc="0.70" voltage="3.85"/>
+        <ocv_point soc="0.80" voltage="3.95"/>
+        <ocv_point soc="0.90" voltage="4.08"/>
+        <ocv_point soc="0.95" voltage="4.14"/>
+        <ocv_point soc="1.00" voltage="4.20"/>
+      </plugin>
+    </include>
+  </world>
+</sdf>

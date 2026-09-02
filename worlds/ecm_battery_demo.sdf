@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<!--
+  Minimal smoke-test world: one static-ish box model with the ESC battery
+  plugin attached, constant power load, start_draining=true so it discharges
+  immediately without needing a moving joint to trigger it. Cell parameters
+  below are the SAME validated LIR18650/NMC values already used in
+  dron_px4_battery_models/esc_battery_model.py (ESCParams defaults) -- not
+  placeholders, the actual numbers from the Dron_PX4_ROS2 comparison work.
+-->
+<sdf version="1.8">
+  <world name="ecm_battery_demo">
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="battery_test_box">
+      <pose>0 0 0.5 0 0 0</pose>
+      <static>true</static>
+      <link name="body">
+        <visual name="visual">
+          <geometry><box><size>0.3 0.3 0.3</size></box></geometry>
+        </visual>
+        <collision name="collision">
+          <geometry><box><size>0.3 0.3 0.3</size></box></geometry>
+        </collision>
+      </link>
+
+      <plugin filename="gz_ecm_battery_plugin" name="gz_ecm_battery_plugin::EscBatteryPlugin">
+        <battery_name>lir18650_esc</battery_name>
+        <capacity>2.5</capacity>
+        <r0>0.050</r0>
+        <r1>0.020</r1>
+        <c1>4000</c1>
+        <hysteresis_m>0.010</hysteresis_m>
+        <hysteresis_m0>0.003</hysteresis_m0>
+        <hysteresis_gamma>50.0</hysteresis_gamma>
+        <coulombic_efficiency>0.998</coulombic_efficiency>
+        <power_load>4.625</power_load> <!-- ~1.25A @ 3.7V nominal (0.5C sustained, HPPC profile) -->
+        <start_draining>true</start_draining>
+        <smooth_current_tau>0.1</smooth_current_tau>
+
+        <!-- OCV(SOC) curve -- identical points to _NMC_SOC_POINTS/_NMC_OCV_POINTS
+             in esc_battery_model.py (NMC/graphite 18650-type cell). -->
+        <ocv_point soc="0.00" voltage="3.00"/>
+        <ocv_point soc="0.05" voltage="3.30"/>
+        <ocv_point soc="0.10" voltage="3.45"/>
+        <ocv_point soc="0.20" voltage="3.55"/>
+        <ocv_point soc="0.30" voltage="3.62"/>
+        <ocv_point soc="0.40" voltage="3.68"/>
+        <ocv_point soc="0.50" voltage="3.72"/>
+        <ocv_point soc="0.60" voltage="3.78"/>
+        <ocv_point soc="0.70" voltage="3.85"/>
+        <ocv_point soc="0.80" voltage="3.95"/>
+        <ocv_point soc="0.90" voltage="4.08"/>
+        <ocv_point soc="0.95" voltage="4.14"/>
+        <ocv_point soc="1.00" voltage="4.20"/>
+      </plugin>
+    </model>
+  </world>
+</sdf>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>gz_ecm_battery_plugin</name>
+  <version>0.1.0</version>
+  <description>
+    Gazebo Sim battery plugin implementing an Equivalent-Circuit Model (ESC,
+    Plett 2015) with one RC polarization branch and hysteresis -- a drop-in,
+    chemistry-agnostic alternative to the stock LinearBatteryPlugin for any
+    Gazebo model, not tied to a specific robot or vehicle type.
+  </description>
+  <maintainer email="ronald.ponguilloi@ug.edu.ec">Ronald Ponguillo-Intriago</maintainer>
+  <license>MIT</license>
+
+  <url type="repository">https://github.com/rponguil/gz_ecm_battery_plugin</url>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>gz-sim8</depend>
+  <depend>gz-common5</depend>
+  <depend>gz-transport13</depend>
+  <depend>gz-msgs10</depend>
+  <depend>gz-plugin2</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

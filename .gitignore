@@ -1,0 +1,32 @@
+# Build artifacts
+build/
+install/
+log/
+__pycache__/
+*.pyc
+
+# Raw third-party downloaded datasets (large, not ours to redistribute in
+# git -- scripts document the DOI/download command instead, see
+# validation_data/*.py docstrings). Fetch them by re-running the scripts.
+validation_data/*.mat
+validation_data/osf_dataset/*.xlsx
+validation_data/osf_dataset/*.csv
+# third-party MATLAB helpers shipped with the OSF dataset -- not ours to
+# redistribute under this repo's MIT license; download them from the dataset DOI
+validation_data/osf_dataset/*.m
+
+# Manuscript, publication planning and venue strategy live OUTSIDE this
+# repository (../paper_P19/). Nothing about the paper is ever committed here:
+# a public repo containing the manuscript can count as prior publication.
+PAPER*.md
+DRAFT*.md
+VENUE*.md
+
+# Regeneratable full-trace validation outputs (multi-MB per-sample CSVs) --
+# the small fitted_*.csv summaries and the PNG figures ARE kept, they are
+# the actual evidence referenced by the paper.
+validation_data/results/validation_vs_*.csv
+validation_data/results/validation_cpp_plugin.csv
+
+# compiled test/validation binaries (source .cc is tracked, this isn't)
+validation_data/validate_cpp_plugin
