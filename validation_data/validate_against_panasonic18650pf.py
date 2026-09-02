@@ -39,10 +39,9 @@ RESULTS_DIR = os.path.join(HERE, "results")
 
 # Reutilizar la clase ESCModel real (misma fuente de verdad que el plugin
 # C++ porta) en vez de reimplementar la matematica una tercera vez.
-ESC_MODEL_PATH = os.path.join(
-    HERE, "..", "..", "..", "Dron_PX4_ROS2", "ros2_ws", "src",
-    "dron_px4_battery_models", "dron_px4_battery_models")
-sys.path.insert(0, os.path.abspath(ESC_MODEL_PATH))
+# The Python reference implementation of the ESC model ships in this directory
+# (esc_battery_model.py) so the validation is reproducible from a clean clone.
+sys.path.insert(0, HERE)
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
 
 
@@ -375,20 +374,20 @@ def main():
               f"(1 rama: {max_err_mv:.2f} mV)")
 
         fig2, ax2 = plt.subplots(2, 1, figsize=(12, 7), sharex=True)
-        ax2[0].plot(t_real / 3600, v_real, "k", lw=1.0, label="Medido (real)")
+        ax2[0].plot(t_real / 3600, v_real, "k", lw=1.0, label="Measured (real cell)")
         ax2[0].plot(t_real / 3600, v_sim, "steelblue", lw=0.8, ls="--",
-                     label=f"1 rama RC (RMSE={rmse_mv:.1f}mV)")
+                     label=f"1 RC branch (RMSE={rmse_mv:.1f} mV)")
         ax2[0].plot(t_real / 3600, v_sim_2rc, "darkorange", lw=0.8, ls=":",
-                     label=f"2 ramas RC (RMSE={rmse_2rc_mv:.1f}mV)")
-        ax2[0].set_ylabel("Voltaje [V]")
+                     label=f"2 RC branches (RMSE={rmse_2rc_mv:.1f} mV)")
+        ax2[0].set_ylabel("Voltage [V]")
         ax2[0].legend(fontsize=9)
-        ax2[0].set_title("Panasonic 18650PF: 1 vs. 2 ramas RC contra celda real")
+        ax2[0].set_title("Panasonic 18650PF: one vs. two RC branches against the measured cell")
         ax2[0].grid(alpha=0.3)
-        ax2[1].plot(t_real / 3600, error_mv, "steelblue", lw=0.5, label="1 rama")
-        ax2[1].plot(t_real / 3600, error_2rc_mv, "darkorange", lw=0.5, label="2 ramas")
+        ax2[1].plot(t_real / 3600, error_mv, "steelblue", lw=0.5, label="1 RC branch")
+        ax2[1].plot(t_real / 3600, error_2rc_mv, "darkorange", lw=0.5, label="2 RC branches")
         ax2[1].axhline(0, color="k", lw=0.5)
         ax2[1].set_ylabel("Error [mV]")
-        ax2[1].set_xlabel("Tiempo [h]")
+        ax2[1].set_xlabel("Time [h]")
         ax2[1].legend(fontsize=9)
         ax2[1].grid(alpha=0.3)
         plt.tight_layout()
@@ -430,24 +429,24 @@ def main():
 
     fig, axes = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
     axes[0].plot(t_real / 3600, i_real, "C1", lw=0.8)
-    axes[0].set_ylabel("Corriente [A]")
+    axes[0].set_ylabel("Current [A]")
     axes[0].set_title(
-        "Modelo ESC vs. celda Panasonic 18650PF real medida "
-        "(Kollmeyer/Univ. Wisconsin-Madison, doi:10.17632/wykht8y7tg.1)")
+        "ESC model vs. measured Panasonic 18650PF cell "
+        "(Kollmeyer, Mendeley Data, doi:10.17632/wykht8y7tg.1)")
     axes[0].grid(alpha=0.3)
 
-    axes[1].plot(t_real / 3600, v_real, "k", lw=1.0, label="Medido (real)")
+    axes[1].plot(t_real / 3600, v_real, "k", lw=1.0, label="Measured (real cell)")
     axes[1].plot(t_real / 3600, v_sim, "steelblue", lw=0.8, ls="--",
-                 label="ESC simulado (R0/R1/C1/OCV ajustados de este mismo dataset)")
-    axes[1].set_ylabel("Voltaje [V]")
+                 label="ESC model (R0/R1/C1/OCV fitted from this same dataset)")
+    axes[1].set_ylabel("Voltage [V]")
     axes[1].legend(fontsize=9)
     axes[1].grid(alpha=0.3)
 
     axes[2].plot(t_real / 3600, error_mv, "purple", lw=0.6)
     axes[2].axhline(0, color="k", lw=0.5)
     axes[2].set_ylabel("Error [mV]")
-    axes[2].set_xlabel("Tiempo [h]")
-    axes[2].set_title(f"RMSE = {rmse_mv:.1f} mV | error máx. = {max_err_mv:.1f} mV")
+    axes[2].set_xlabel("Time [h]")
+    axes[2].set_title(f"RMSE = {rmse_mv:.1f} mV | max. error = {max_err_mv:.1f} mV")
     axes[2].grid(alpha=0.3)
 
     plt.tight_layout()

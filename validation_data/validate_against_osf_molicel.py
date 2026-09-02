@@ -42,15 +42,22 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTS_DIR = os.path.join(HERE, "results")
+
+# Hysteresis experiment: split rest points by approach direction (post-charge vs.
+# post-discharge), measure the OCV gap at equal SOC, and feed half of it back as
+# the instantaneous hysteresis amplitude M0.
+#
+# This is a REPORTED NEGATIVE RESULT, kept off by default. With the rest-point
+# coverage this dataset provides (61 points, split 24/36 by direction) the two
+# curves are too sparse to separate reliably, and enabling it degrades RMSE from
+# 33.4 mV to 84.0 mV. The code is kept so the negative result is reproducible.
+# Set to True to reproduce it; leave False for the baseline reported in the paper.
+HYSTERESIS_EXPERIMENT = False
 sys.path.insert(0, HERE)
 from validate_against_panasonic18650pf import (  # noqa: E402
     build_soc_curve, fit_r0_r1_c1_per_pulse, fit_two_rc_branches_per_pulse,
     find_pulses)
 
-ESC_MODEL_PATH = os.path.join(
-    HERE, "..", "..", "..", "Dron_PX4_ROS2", "ros2_ws", "src",
-    "dron_px4_battery_models", "dron_px4_battery_models")
-sys.path.insert(0, os.path.abspath(ESC_MODEL_PATH))
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
 
 
@@ -150,7 +157,7 @@ def main():
     print(f"Reposos post-descarga: {dis_mask.sum()}, post-carga: {chg_mask.sum()}")
     hyst_m0_fit = 0.0
     ocv_avg_grid, ocv_avg_v = soc_grid, v_grid
-    if dis_mask.sum() >= 3 and chg_mask.sum() >= 3:
+    if HYSTERESIS_EXPERIMENT and dis_mask.sum() >= 3 and chg_mask.sum() >= 3:
         dis_curve = build_soc_curve(soc_frac[dis_mask], v_ocv_pts[dis_mask],
                                      bin_width=0.1, min_points=2)
         chg_curve = build_soc_curve(soc_frac[chg_mask], v_ocv_pts[chg_mask],
@@ -256,20 +263,20 @@ def main():
               f"(1 rama: {max_err_mv:.2f} mV)")
 
         fig2b, ax2b = plt.subplots(2, 1, figsize=(12, 7), sharex=True)
-        ax2b[0].plot(t / 3600, v, "k", lw=1.0, label="Medido (real)")
+        ax2b[0].plot(t / 3600, v, "k", lw=1.0, label="Measured (real cell)")
         ax2b[0].plot(t / 3600, v_sim, "steelblue", lw=0.6, ls="--",
-                      label=f"1 rama RC (RMSE={rmse_mv:.1f}mV)")
+                      label=f"1 RC branch (RMSE={rmse_mv:.1f} mV)")
         ax2b[0].plot(t / 3600, v_sim_2rc, "darkorange", lw=0.6, ls=":",
-                      label=f"2 ramas RC (RMSE={rmse_2rc_mv:.1f}mV)")
-        ax2b[0].set_ylabel("Voltaje [V]")
+                      label=f"2 RC branches (RMSE={rmse_2rc_mv:.1f} mV)")
+        ax2b[0].set_ylabel("Voltage [V]")
         ax2b[0].legend(fontsize=9)
-        ax2b[0].set_title("Molicel 21700-P42A: 1 vs. 2 ramas RC contra celda real")
+        ax2b[0].set_title("Molicel INR-21700-P42A: one vs. two RC branches against the measured cell")
         ax2b[0].grid(alpha=0.3)
-        ax2b[1].plot(t / 3600, error_mv, "steelblue", lw=0.4, label="1 rama")
-        ax2b[1].plot(t / 3600, error_2rc_mv, "darkorange", lw=0.4, label="2 ramas")
+        ax2b[1].plot(t / 3600, error_mv, "steelblue", lw=0.4, label="1 RC branch")
+        ax2b[1].plot(t / 3600, error_2rc_mv, "darkorange", lw=0.4, label="2 RC branches")
         ax2b[1].axhline(0, color="k", lw=0.5)
         ax2b[1].set_ylabel("Error [mV]")
-        ax2b[1].set_xlabel("Tiempo [h]")
+        ax2b[1].set_xlabel("Time [h]")
         ax2b[1].legend(fontsize=9)
         ax2b[1].grid(alpha=0.3)
         plt.tight_layout()
@@ -281,21 +288,21 @@ def main():
 
     fig, axes = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
     axes[0].plot(t / 3600, i, "C1", lw=0.5)
-    axes[0].set_ylabel("Corriente [A]")
+    axes[0].set_ylabel("Current [A]")
     axes[0].set_title(
-        "Modelo ESC vs. celda Molicel INR-21700-P42A real medida "
-        "(dataset OSF, doi:10.17605/OSF.IO/9CEAV, celda A13, test HCGT 25degC)")
+        "ESC model vs. measured Molicel INR-21700-P42A cell "
+        "(OSF dataset, doi:10.17605/OSF.IO/9CEAV, cell A13, HCGT test, 25 degC)")
     axes[0].grid(alpha=0.3)
-    axes[1].plot(t / 3600, v, "k", lw=0.8, label="Medido (real)")
-    axes[1].plot(t / 3600, v_sim, "steelblue", lw=0.6, ls="--", label="ESC simulado")
-    axes[1].set_ylabel("Voltaje [V]")
+    axes[1].plot(t / 3600, v, "k", lw=0.8, label="Measured (real cell)")
+    axes[1].plot(t / 3600, v_sim, "steelblue", lw=0.6, ls="--", label="ESC model")
+    axes[1].set_ylabel("Voltage [V]")
     axes[1].legend(fontsize=9)
     axes[1].grid(alpha=0.3)
     axes[2].plot(t / 3600, error_mv, "purple", lw=0.4)
     axes[2].axhline(0, color="k", lw=0.5)
     axes[2].set_ylabel("Error [mV]")
-    axes[2].set_xlabel("Tiempo [h]")
-    axes[2].set_title(f"RMSE = {rmse_mv:.1f} mV | error máx. = {max_err_mv:.1f} mV")
+    axes[2].set_xlabel("Time [h]")
+    axes[2].set_title(f"RMSE = {rmse_mv:.1f} mV | max. error = {max_err_mv:.1f} mV")
     axes[2].grid(alpha=0.3)
     plt.tight_layout()
     fig_path = os.path.join(RESULTS_DIR, "validation_vs_osf_molicel.png")
