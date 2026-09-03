@@ -51,6 +51,27 @@ These are fast, standalone unit tests (no Gazebo needed). The against-real-cell 
 (comparing the plugin's output to measured voltage from public battery datasets) is a
 separate, heavier check documented in `validation_data/`.
 
+## Validated envelope
+
+What the model has actually been checked against, so you know where you can lean on it:
+
+| | |
+|---|---|
+| Cells | Panasonic 18650PF (NCA, 2.9 Ah) and Molicel INR-21700-P42A (NMC, 4.2 Ah) — two chemistries, two formats, two laboratories |
+| Temperature | **−20 °C to 25 °C** (five points), RMSE 34–55 mV throughout |
+| Current | up to 6C (Panasonic HPPC) and ±32 A (Molicel GITT) |
+| Cell state | fresh cells |
+
+Reproduce with `validate_across_temperature.py`. Each temperature is parameterized
+independently from its own file; the fitted series resistance rises from 25.4 mΩ at 25 °C to
+87.9 mΩ at −20 °C and the usable capacity falls from 2.773 Ah to 2.182 Ah, both recovered
+from the data rather than assumed — the physics comes out right without being put in.
+
+**Outside that envelope accuracy is not established.** In particular: aged or cycled cells,
+temperatures below −20 °C, and real flight discharge profiles (all validation here is
+laboratory pulse testing) have not been checked. Do not assume parameters fitted at one
+temperature transfer to another — they demonstrably do not.
+
 ## Parameterizing it for your own cell — read this first
 
 Where you get the OCV(SOC) curve from matters **more than the model structure**. In a
