@@ -89,16 +89,17 @@ Reproduce it with `python3 validation_data/validate_ocv_provenance.py`.
 fit the resistances, using the relaxation voltage at the end of each rest period — not from a
 separately recorded discharge curve, and not from a datasheet plot. Cells age between
 sessions (6.6% capacity difference in the case above), and that mismatch propagates into
-every voltage the model predicts. A same-session curve gave ~34 mV RMSE on two entirely
-different cells (Panasonic 18650PF NCA and Molicel INR-21700-P42A NMC).
+every voltage the model predicts. A same-session curve gave ~34 mV RMSE on all three cells
+tested, spanning two chemistries and two laboratories.
 
 A second, independent requirement: **the OCV curve must reach down to a genuinely depleted
 rest point.** An equivalent-circuit model can only reproduce the end-of-discharge voltage
 collapse if its OCV floor is low enough that the ohmic drop can carry it to the cell's real
-cutoff. In one of our datasets the OCV floor sat 733 mV above the measured minimum, making
-the model *structurally* unable to predict the collapse — the simulated low-voltage failsafe
-fired hours late. In the other, the floor was within 362 mV and the failsafe fired within a
-minute of the real cell.
+cutoff. This is a real failure mode, though not a common one: of the three datasets tested,
+two have floors within ~310-360 mV of the measured minimum and behave correctly, while the
+Panasonic file's floor sits 733 mV above it, leaving the model *structurally* unable to
+predict the collapse — the simulated low-voltage failsafe fired hours late. Worth checking
+rather than assuming, which is why the plugin checks it for you.
 
 The plugin checks both conditions at load time and tells you:
 
