@@ -71,8 +71,27 @@ sessions (6.6% capacity difference in the case above), and that mismatch propaga
 every voltage the model predicts. A same-session curve gave ~34 mV RMSE on two entirely
 different cells (Panasonic 18650PF NCA and Molicel INR-21700-P42A NMC).
 
-This does **not** fix the worst-case error near end of discharge, which has a different
-cause and is documented as an open limitation.
+A second, independent requirement: **the OCV curve must reach down to a genuinely depleted
+rest point.** An equivalent-circuit model can only reproduce the end-of-discharge voltage
+collapse if its OCV floor is low enough that the ohmic drop can carry it to the cell's real
+cutoff. In one of our datasets the OCV floor sat 733 mV above the measured minimum, making
+the model *structurally* unable to predict the collapse — the simulated low-voltage failsafe
+fired hours late. In the other, the floor was within 362 mV and the failsafe fired within a
+minute of the real cell.
+
+The plugin checks both conditions at load time and tells you:
+
+```
+[Wrn] EscBatteryPlugin: the OCV curve starts at SOC=0.2, so everything below that is
+      flat-extrapolated. Real cells drop steeply near 0% SOC; end-of-discharge
+      behaviour will be optimistic. Add <ocv_point> entries down to SOC=0.
+[Msg] EscBatteryPlugin: OCV curve spans SOC [0.2, 1], voltage [3.55, 4.2] V. Deepest
+      terminal voltage this configuration can reach is about 3.4588 V ...
+```
+
+Compare that last number against your cell's datasheet cutoff. If the cutoff is lower, the
+model cannot reproduce the final part of the discharge, and any decision your simulation
+makes there (return-to-home, mission abort) will be wrong.
 
 ## Try it
 

@@ -171,6 +171,54 @@ void EscBatteryPlugin::Configure(const gz::sim::Entity &_entity,
   CubicSpline ocvSpline;
   ocvSpline.Build(socPts, ocvPts);
 
+  // --- Parameterization sanity checks -------------------------------------
+  //
+  // An equivalent-circuit model can only reproduce the end-of-discharge
+  // voltage collapse if its OCV curve actually reaches down to a depleted
+  // state. If the lowest OCV point sits well above the voltage the cell
+  // really reaches, the model is *structurally* unable to predict that
+  // collapse, no matter how well R0/R1/C1 are fitted -- and end of discharge
+  // is precisely where low-voltage failsafes and return-to-home decisions are
+  // made. This was measured: an OCV curve whose floor sat 733 mV above the
+  // measured minimum made the modelled failsafe fire hours late, while a
+  // curve reaching within 362 mV of it fired within a minute of the real
+  // cell. See the paper and validation_data/validate_ocv_provenance.py.
+  //
+  // These are warnings, not errors: the user may legitimately be simulating
+  // only a partial discharge, or a chemistry with a different cutoff.
+  {
+    const double socFloor = socPts.front();
+    const double ocvFloor = ocvPts.front();
+
+    if (socFloor > 0.02)
+    {
+      gzwarn << "EscBatteryPlugin: the OCV curve starts at SOC=" << socFloor
+             << ", so everything below that is flat-extrapolated. Real cells "
+             << "drop steeply near 0% SOC; end-of-discharge behaviour will be "
+             << "optimistic. Add <ocv_point> entries down to SOC=0.\n";
+    }
+
+    // Largest ohmic drop this configuration can produce, i.e. the deepest
+    // terminal voltage the model can ever reach.
+    const double rTotal = escParams.r0
+        + (escParams.r1 > 0.0 ? escParams.r1 : 0.0)
+        + (escParams.r2 > 0.0 ? escParams.r2 : 0.0);
+    double iMax = 0.0;
+    if (_sdf->HasElement("power_load") && ocvFloor > 0.0)
+      iMax = _sdf->Get<double>("power_load") / ocvFloor;
+    const double vFloorReachable = ocvFloor - iMax * rTotal;
+
+    gzmsg << "EscBatteryPlugin: OCV curve spans SOC ["
+          << socFloor << ", " << socPts.back() << "], voltage ["
+          << ocvFloor << ", " << ocvPts.back() << "] V. Deepest terminal "
+          << "voltage this configuration can reach is about "
+          << vFloorReachable << " V (OCV floor minus " << iMax * rTotal
+          << " V of ohmic drop at the configured load). Compare that against "
+          << "your cell's datasheet cutoff: if the cutoff is lower, the model "
+          << "cannot reproduce the final part of the discharge.\n";
+  }
+  // ------------------------------------------------------------------------
+
   double initVoltage = ocvSpline.Eval(1.0);
   if (_sdf->HasElement("voltage"))
     initVoltage = _sdf->Get<double>("voltage");
