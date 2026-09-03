@@ -57,7 +57,7 @@ What the model has actually been checked against, so you know where you can lean
 
 | | |
 |---|---|
-| Cells | Panasonic 18650PF (NCA, 2.9 Ah) and Molicel INR-21700-P42A (NMC, 4.2 Ah) — two chemistries, two formats, two laboratories |
+| Cells | Panasonic 18650PF (NCA, 2.9 Ah), LG 18650HG2 (NMC, 3.0 Ah) and Molicel INR-21700-P42A (NMC, 4.2 Ah) — three cells, two laboratories. RMSE 33.4 / 34.0 / 34.3 mV, i.e. within 1 mV of each other |
 | Temperature | **−20 °C to 25 °C** (five points), RMSE 34–55 mV throughout |
 | Current | up to 6C (Panasonic HPPC) and ±32 A (Molicel GITT) |
 | Cell state | fresh cells |
