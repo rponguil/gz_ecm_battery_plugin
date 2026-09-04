@@ -1,14 +1,24 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+type: software
 title: "gz_ecm_battery_plugin: A Chemistry-Agnostic Equivalent-Circuit Battery Plugin for Gazebo Sim"
 authors:
   - family-names: "Ponguillo-Intriago"
     given-names: "Ronald"
     email: "ronald.ponguilloi@ug.edu.ec"
-    affiliation: "Universidad de Guayaquil"
-version: 0.1.0
-date-released: "2026-08-31"
+    affiliation: "Facultad de Ciencias Matematicas y Fisicas, Universidad de Guayaquil"
+    orcid: "https://orcid.org/0000-0002-7554-8367"
+version: 1.0.0
+date-released: "2026-09-04"
 license: MIT
+abstract: >-
+  A chemistry-agnostic Equivalent-Circuit-Model (ECM) battery plugin for Gazebo
+  Sim, implementing Plett's Enhanced Self-Correcting model: a user-supplied
+  non-linear OCV(SOC) curve, series resistance, one or two RC polarization
+  branches and hysteresis, all declared from SDF so that modelling a different
+  cell requires no recompilation. Validated against three independent public
+  datasets (Panasonic 18650PF, LG 18650HG2, Molicel INR-21700-P42A) at
+  33-34 mV RMSE, and across -20 to 25 degrees Celsius.
 repository-code: "https://github.com/rponguil/gz_ecm_battery_plugin"
 keywords:
   - gazebo
