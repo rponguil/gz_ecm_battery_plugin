@@ -10,6 +10,14 @@ authors:
     orcid: "https://orcid.org/0000-0002-7554-8367"
 version: 1.0.0
 date-released: "2026-09-04"
+doi: 10.5281/zenodo.22311394
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22311394
+    description: Concept DOI - always resolves to the latest version
+  - type: doi
+    value: 10.5281/zenodo.22311395
+    description: Archived snapshot of version 1.0.0
 license: MIT
 abstract: >-
   A chemistry-agnostic Equivalent-Circuit-Model (ECM) battery plugin for Gazebo

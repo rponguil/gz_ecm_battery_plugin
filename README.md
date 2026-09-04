@@ -1,5 +1,8 @@
 # gz_ecm_battery_plugin
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22311394.svg)](https://doi.org/10.5281/zenodo.22311394)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A **chemistry-agnostic** Equivalent-Circuit-Model (ECM) battery plugin for **Gazebo Sim**
 (tested on Gazebo Harmonic, `gz-sim8`), implementing Plett's "Enhanced Self-Correcting" (ESC)
 model — one RC polarization branch plus dynamic/instantaneous hysteresis — as a **drop-in
@@ -182,9 +185,12 @@ same values validated in the companion Python model, see below).
 
 ## Citation
 
-See `CITATION.cff`. Repository: https://github.com/rponguil/gz_ecm_battery_plugin (currently
-private — will be made public before/at paper submission; a Zenodo DOI will be minted from the
-first public release).
+See `CITATION.cff`. Archived on Zenodo with a permanent DOI:
+
+- **Concept DOI** (always the latest version): [10.5281/zenodo.22311394](https://doi.org/10.5281/zenodo.22311394)
+- **This version (v1.0.0)**: [10.5281/zenodo.22311395](https://doi.org/10.5281/zenodo.22311395)
+
+Repository: https://github.com/rponguil/gz_ecm_battery_plugin
 
 ## License
 
