@@ -25,9 +25,27 @@ swapping between them only requires SDF changes, not a different simulation setu
 
 ## Build
 
-Dependencies: Gazebo Sim (`gz-sim8`/Harmonic — the four `gz-*` packages below), a C++17
-compiler. No ROS 2 dependency in the plugin code itself, but it builds fine inside a ROS 2
-workspace via `colcon` too (has a `package.xml`).
+Dependencies: Gazebo Sim (`gz-sim8`/Harmonic), a C++17 compiler, and the ZeroMQ C++ headers
+that `gz-transport13` needs but the `gz-harmonic` metapackage does not pull in:
+
+```bash
+sudo apt install gz-harmonic cppzmq-dev libzmq3-dev cmake build-essential
+sudo apt install libgtest-dev        # optional, enables the unit tests
+```
+
+Without `cppzmq-dev` the CMake configure step fails with `Target "CPPZMQ::CPPZMQ" not found`.
+This bites only on clean systems — a machine that has ever built Gazebo from source already
+has it.
+
+No ROS 2 dependency in the plugin code itself, but it builds fine inside a ROS 2 workspace
+via `colcon` too (has a `package.xml`).
+
+A pinned environment is available if you prefer not to touch your system:
+
+```bash
+docker build -t gz_ecm_battery_plugin .
+docker run --rm gz_ecm_battery_plugin all    # unit tests + end-to-end test
+```
 
 ```bash
 # plain CMake
@@ -50,7 +68,15 @@ cd build && ctest --output-on-failure
 # or directly: ./test_esc_model
 ```
 
-These are fast, standalone unit tests (no Gazebo needed). The against-real-cell validation
+These cover the simulator-independent core. The layer the user actually runs — SDF parsing,
+the ECM component, the telemetry topic — is covered by a separate end-to-end test that
+launches the demo world headless and checks the whole path:
+
+```bash
+python3 test/test_end_to_end.py
+```
+
+Both run in CI on every push. The against-real-cell validation
 (comparing the plugin's output to measured voltage from public battery datasets) is a
 separate, heavier check documented in `validation_data/`.
 

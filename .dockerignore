@@ -1,0 +1,9 @@
+build/
+install/
+log/
+__pycache__/
+*.pyc
+validation_data/*.mat
+validation_data/*.csv
+validation_data/osf_dataset/
+.git/

@@ -1,0 +1,43 @@
+name: build-and-test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Gazebo Harmonic and build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl lsb-release gnupg cmake build-essential \
+                                  libgtest-dev cppzmq-dev libzmq3-dev
+          sudo curl https://packages.osrfoundation.org/gazebo.gpg --output \
+               /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
+               | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install -y gz-harmonic
+
+      - name: Configure and build
+        run: |
+          cmake -S . -B build
+          cmake --build build -j"$(nproc)"
+
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: End-to-end test (SDF -> plugin -> telemetry)
+        env:
+          # gz-transport discovery is unreliable on multi-interface CI runners;
+          # pin it to loopback with a fixed partition. See README.
+          GZ_IP: 127.0.0.1
+          GZ_PARTITION: ci_e2e
+        run: |
+          export GZ_SIM_SYSTEM_PLUGIN_PATH="$PWD/build:$GZ_SIM_SYSTEM_PLUGIN_PATH"
+          python3 test/test_end_to_end.py
