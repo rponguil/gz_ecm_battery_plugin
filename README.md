@@ -214,7 +214,7 @@ same values validated in the companion Python model, see below).
 See `CITATION.cff`. Archived on Zenodo with a permanent DOI:
 
 - **Concept DOI** (always the latest version): [10.5281/zenodo.22311394](https://doi.org/10.5281/zenodo.22311394)
-- **This version (v1.0.0)**: [10.5281/zenodo.22311395](https://doi.org/10.5281/zenodo.22311395)
+- **This version (v1.1.0)**: [10.5281/zenodo.22408025](https://doi.org/10.5281/zenodo.22408025)
 
 Repository: https://github.com/rponguil/gz_ecm_battery_plugin
 
