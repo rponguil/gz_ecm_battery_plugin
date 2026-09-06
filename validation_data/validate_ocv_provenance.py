@@ -35,6 +35,7 @@ from validate_against_panasonic18650pf import (  # noqa: E402
     build_soc_curve)
 from validate_against_osf_molicel import extract_ocv_from_rests  # noqa: E402
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
+from paper_numbers import record
 
 
 def simulate(t, i, soc_ref, dt_arr, capacity_ah, r0, r1, c1, ocv_func):
@@ -97,16 +98,31 @@ def main():
     ]
 
     results = []
+    second_half = []
     for label, ocv in variants:
         v_sim = simulate(t, i, soc_ref, dt_arr, capacity_ah, r0, r1, c1, ocv)
         err = (v_sim - v) * 1000.0
         rmse = float(np.sqrt(np.mean(err ** 2)))
         max_err = float(np.max(np.abs(err)))
         results.append((label, rmse, max_err))
+        second_half.append(float(np.sqrt(np.mean(err[len(err) // 2:] ** 2))))
         print(f"OCV from {label}")
         print(f"    RMSE = {rmse:7.2f} mV   |  max error = {max_err:7.1f} mV")
 
     ra, rb = results[0][1], results[1][1]
+    record("panasonic.rmse_separate_session_mv", ra, "mV",
+           "C/20 OCV from a different session, constant R0/R1")
+    record("panasonic.rmse_mv", rb, "mV",
+           "same-session OCV from HPPC rests, constant R0/R1 -- the headline "
+           "figure quoted in the validation table")
+    record("panasonic.max_err_mv", results[1][2], "mV",
+           "same-session OCV from HPPC rests, constant R0/R1")
+    record("panasonic.ecm_second_half_mv", second_half[1], "mV",
+           "ECM evaluated on the second half of the trace")
+    record("provenance.factor", ra / rb, "x",
+           "effect of OCV provenance alone, model unchanged")
+    record("panasonic.capacity_hppc_ah", capacity_ah, "Ah", "HPPC file's own capacity")
+    record("panasonic.r0_mohm", r0 * 1000.0, "mOhm", "median of per-pulse fits at 25 C")
     print(f"\nChanging ONLY the OCV provenance: {ra:.2f} -> {rb:.2f} mV "
           f"({ra/rb:.2f}x)")
     print("Note the worst-case error does NOT improve -- the end-of-discharge "

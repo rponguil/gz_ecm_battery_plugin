@@ -59,6 +59,7 @@ from validate_against_panasonic18650pf import (  # noqa: E402
     find_pulses)
 
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
+from paper_numbers import record
 
 
 def load_osf_hcgt(path):
@@ -228,6 +229,13 @@ def main():
     error_mv = (v_sim - v) * 1000.0
     rmse_mv = float(np.sqrt(np.mean(error_mv**2)))
     max_err_mv = float(np.max(np.abs(error_mv)))
+    record("molicel.rmse_mv", rmse_mv, "mV", "same-session OCV from GITT rests")
+    _h = len(error_mv) // 2
+    record("molicel.ecm_second_half_mv",
+           float(np.sqrt(np.mean(error_mv[_h:] ** 2))), "mV",
+           "ECM evaluated on the second half of the trace")
+    record("molicel.max_err_mv", float(np.max(np.abs(error_mv))), "mV",
+           "same-session OCV from GITT rests")
     print(f"\nRMSE vs. celda real medida (Molicel P42A, 1 rama RC): {rmse_mv:.2f} mV")
     print(f"Error maximo (1 rama RC): {max_err_mv:.2f} mV")
 

@@ -43,6 +43,7 @@ RESULTS_DIR = os.path.join(HERE, "results")
 # (esc_battery_model.py) so the validation is reproducible from a clean clone.
 sys.path.insert(0, HERE)
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
+from paper_numbers import record
 
 
 def load_meas(path):
@@ -336,6 +337,8 @@ def main():
     error_mv = (v_sim - v_real) * 1000.0
     rmse_mv = float(np.sqrt(np.mean(error_mv**2)))
     max_err_mv = float(np.max(np.abs(error_mv)))
+    record("panasonic.rmse_cross_session_mv", rmse_mv, "mV",
+           "separate-session C/20 OCV, R0(z)/R1(z) curves, 1 RC branch")
     print(f"\nRMSE vs. celda real medida (1 rama RC): {rmse_mv:.2f} mV")
     print(f"Error maximo (1 rama RC): {max_err_mv:.2f} mV")
 

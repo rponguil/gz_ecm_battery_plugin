@@ -1,0 +1,205 @@
+{
+  "lg_hg2.baseline_held_out_mv": {
+    "note": "Eq. (1) fitted on the first half, evaluated on the second",
+    "recorded": "2026-09-06T00:28:52Z",
+    "source": "validate_vs_linear_baseline.py",
+    "unit": "mV",
+    "value": 118.593695
+  },
+  "lg_hg2.baseline_in_sample_mv": {
+    "note": "Eq. (1) fitted to the whole trace by least squares",
+    "recorded": "2026-09-06T00:28:52Z",
+    "source": "validate_vs_linear_baseline.py",
+    "unit": "mV",
+    "value": 56.239069
+  },
+  "lg_hg2.ecm_second_half_mv": {
+    "note": "ECM evaluated on the second half of the trace",
+    "recorded": "2026-09-06T00:31:17Z",
+    "source": "validate_against_lg_hg2.py",
+    "unit": "mV",
+    "value": 38.048822
+  },
+  "lg_hg2.max_err_mv": {
+    "note": "same-session OCV from rest periods",
+    "recorded": "2026-09-06T00:31:17Z",
+    "source": "validate_against_lg_hg2.py",
+    "unit": "mV",
+    "value": 285.148017
+  },
+  "lg_hg2.rmse_mv": {
+    "note": "same-session OCV from rest periods",
+    "recorded": "2026-09-06T00:31:17Z",
+    "source": "validate_against_lg_hg2.py",
+    "unit": "mV",
+    "value": 34.03511
+  },
+  "molicel.baseline_held_out_mv": {
+    "note": "Eq. (1) fitted on the first half, evaluated on the second",
+    "recorded": "2026-09-06T00:28:53Z",
+    "source": "validate_vs_linear_baseline.py",
+    "unit": "mV",
+    "value": 134.533834
+  },
+  "molicel.baseline_in_sample_mv": {
+    "note": "Eq. (1) fitted to the whole trace by least squares",
+    "recorded": "2026-09-06T00:28:53Z",
+    "source": "validate_vs_linear_baseline.py",
+    "unit": "mV",
+    "value": 105.539239
+  },
+  "molicel.ecm_second_half_mv": {
+    "note": "ECM evaluated on the second half of the trace",
+    "recorded": "2026-09-06T00:31:21Z",
+    "source": "validate_against_osf_molicel.py",
+    "unit": "mV",
+    "value": 39.796031
+  },
+  "molicel.max_err_mv": {
+    "note": "same-session OCV from GITT rests",
+    "recorded": "2026-09-06T00:31:21Z",
+    "source": "validate_against_osf_molicel.py",
+    "unit": "mV",
+    "value": 348.834694
+  },
+  "molicel.rmse_mv": {
+    "note": "same-session OCV from GITT rests",
+    "recorded": "2026-09-06T00:31:21Z",
+    "source": "validate_against_osf_molicel.py",
+    "unit": "mV",
+    "value": 33.417242
+  },
+  "panasonic.baseline_held_out_mv": {
+    "note": "Eq. (1) fitted on the first half, evaluated on the second",
+    "recorded": "2026-09-06T00:28:51Z",
+    "source": "validate_vs_linear_baseline.py",
+    "unit": "mV",
+    "value": 76.193779
+  },
+  "panasonic.baseline_in_sample_mv": {
+    "note": "Eq. (1) fitted to the whole trace by least squares",
+    "recorded": "2026-09-06T00:28:51Z",
+    "source": "validate_vs_linear_baseline.py",
+    "unit": "mV",
+    "value": 36.00341
+  },
+  "panasonic.capacity_hppc_ah": {
+    "note": "HPPC file's own capacity",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "Ah",
+    "value": 2.7728
+  },
+  "panasonic.ecm_second_half_mv": {
+    "note": "ECM evaluated on the second half of the trace",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "mV",
+    "value": 44.229973
+  },
+  "panasonic.max_err_mv": {
+    "note": "same-session OCV from HPPC rests, constant R0/R1",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "mV",
+    "value": 568.41159
+  },
+  "panasonic.r0_mohm": {
+    "note": "median of per-pulse fits at 25 C",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "mOhm",
+    "value": 25.408347
+  },
+  "panasonic.rmse_cross_session_mv": {
+    "note": "separate-session C/20 OCV, R0(z)/R1(z) curves, 1 RC branch",
+    "recorded": "2026-09-06T00:28:32Z",
+    "source": "validate_against_panasonic18650pf.py",
+    "unit": "mV",
+    "value": 87.045186
+  },
+  "panasonic.rmse_mv": {
+    "note": "same-session OCV from HPPC rests, constant R0/R1 -- the headline figure quoted in the validation table",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "mV",
+    "value": 34.343403
+  },
+  "panasonic.rmse_separate_session_mv": {
+    "note": "C/20 OCV from a different session, constant R0/R1",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "mV",
+    "value": 85.735968
+  },
+  "provenance.factor": {
+    "note": "effect of OCV provenance alone, model unchanged",
+    "recorded": "2026-09-06T00:31:14Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "x",
+    "value": 2.496432
+  },
+  "temperature.capacity_25c_ah": {
+    "note": "usable at 25 C",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "Ah",
+    "value": 2.7728
+  },
+  "temperature.capacity_drop_pct": {
+    "note": "usable capacity lost between 25 and -20 C",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "%",
+    "value": 21.30049
+  },
+  "temperature.capacity_n20c_ah": {
+    "note": "usable at -20 C",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "Ah",
+    "value": 2.18218
+  },
+  "temperature.r0_25c_mohm": {
+    "note": "fitted at 25 C",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "mOhm",
+    "value": 25.408347
+  },
+  "temperature.r0_n20c_mohm": {
+    "note": "fitted at -20 C",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "mOhm",
+    "value": 87.875256
+  },
+  "temperature.rmse_max_mv": {
+    "note": "worst over the sweep",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "mV",
+    "value": 55.289133
+  },
+  "temperature.rmse_min_mv": {
+    "note": "best over the sweep",
+    "recorded": "2026-09-06T00:35:13Z",
+    "source": "validate_across_temperature.py",
+    "unit": "mV",
+    "value": 34.343403
+  },
+  "temperature.transfer_25c_to_n20c_mv": {
+    "note": "25 C parameters evaluated on -20 C data",
+    "recorded": "2026-09-06T00:35:16Z",
+    "source": "validate_across_temperature.py",
+    "unit": "mV",
+    "value": 159.692443
+  },
+  "temperature.transfer_penalty_x": {
+    "note": "penalty for not re-parameterizing at the operating temperature",
+    "recorded": "2026-09-06T00:35:16Z",
+    "source": "validate_across_temperature.py",
+    "unit": "x",
+    "value": 2.888315
+  }
+}

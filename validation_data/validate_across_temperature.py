@@ -46,6 +46,7 @@ from validate_against_panasonic18650pf import (  # noqa: E402
     load_meas, find_pulses, fit_r0_r1_c1_per_pulse, build_soc_curve)
 from validate_against_osf_molicel import extract_ocv_from_rests  # noqa: E402
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
+from paper_numbers import record
 
 # (etiqueta, archivo, temperatura en degC)
 CASES = [
@@ -113,8 +114,48 @@ def run_one(path):
         "n_pulses": len(r0_vals),
         "ocv_floor": float(vg.min()),
         "v_floor": float(v.min()),
-        "t": t, "v": v, "v_sim": v_sim,
+        "t": t, "v": v, "v_sim": v_sim, "ocv": ocv,
     }
+
+
+def fit_only(path):
+    """Return the parameters fitted from one temperature's file, nothing else."""
+    r = run_one(path)
+    if r is None:
+        return None
+    return {"r0": r["r0_mohm"] / 1000.0, "r1": r["r1_mohm"] / 1000.0,
+            "c1": r["c1_f"], "capacity_ah": r["capacity_ah"], "ocv": r["ocv"]}
+
+
+def run_transfer(src_path, dst_path):
+    """Parameterize at one temperature, evaluate at another.
+
+    The paper states that parameters do not transfer across temperature. This
+    puts a number on it instead of asserting it: how much worse is a model
+    carrying 25 C parameters when the cell is actually at -20 C?
+    """
+    src = fit_only(src_path)
+    if src is None:
+        return None
+    d = load_meas(dst_path)
+    capacity_ah = float(abs(d["ah"].min()))
+    t, v = d["t"], d["v"]
+    i = -d["i"]
+    soc_ref = np.clip(1.0 + d["ah"] / capacity_ah, 0.0, 1.0)
+    dt = np.diff(t, prepend=t[0])
+    dt[0] = dt[1] if len(dt) > 1 else 0.1
+
+    # Everything comes from the source temperature except the trace itself.
+    model = ESCModel(ESCParams(
+        capacity_ah=src["capacity_ah"], r0_ohm=src["r0"], r1_ohm=src["r1"],
+        c1_farad=src["c1"], hyst_m=0.0, hyst_m0=0.0, coulombic_eff=1.0,
+        ocv_func=src["ocv"]))
+    v_sim = np.empty_like(v)
+    for k in range(len(t)):
+        model.z = float(soc_ref[k])
+        v_sim[k] = model.step(float(i[k]), float(dt[k]))
+    err = (v_sim - v) * 1000.0
+    return float(np.sqrt(np.mean(err ** 2)))
 
 
 def main():
@@ -141,6 +182,32 @@ def main():
     if not rows:
         print("\nNo hay archivos para evaluar.")
         return
+
+    rm = [r["rmse_mv"] for _, _, r in rows]
+    by_t = {t: r for _, t, r in rows}
+    record("temperature.rmse_min_mv", min(rm), "mV", "best over the sweep")
+    record("temperature.rmse_max_mv", max(rm), "mV", "worst over the sweep")
+    if 25 in by_t and -20 in by_t:
+        record("temperature.r0_25c_mohm", by_t[25]["r0_mohm"], "mOhm", "fitted at 25 C")
+        record("temperature.r0_n20c_mohm", by_t[-20]["r0_mohm"], "mOhm", "fitted at -20 C")
+        record("temperature.capacity_25c_ah", by_t[25]["capacity_ah"], "Ah", "usable at 25 C")
+        record("temperature.capacity_n20c_ah", by_t[-20]["capacity_ah"], "Ah", "usable at -20 C")
+        record("temperature.capacity_drop_pct",
+               100.0 * (1.0 - by_t[-20]["capacity_ah"] / by_t[25]["capacity_ah"]),
+               "%", "usable capacity lost between 25 and -20 C")
+
+    # Cuanto cuesta NO re-parametrizar: 25 degC aplicado a -20 degC.
+    src, dst = os.path.join(HERE, "hppc_25degC.mat"), os.path.join(HERE, "hppc_n20degC.mat")
+    if os.path.exists(src) and os.path.exists(dst) and -20 in by_t:
+        xfer = run_transfer(src, dst)
+        if xfer:
+            record("temperature.transfer_25c_to_n20c_mv", xfer, "mV",
+                   "25 C parameters evaluated on -20 C data")
+            record("temperature.transfer_penalty_x", xfer / by_t[-20]["rmse_mv"], "x",
+                   "penalty for not re-parameterizing at the operating temperature")
+            print(f"\n25 degC parameters on -20 degC data: {xfer:.1f} mV "
+                  f"vs {by_t[-20]['rmse_mv']:.1f} mV re-parameterized "
+                  f"({xfer / by_t[-20]['rmse_mv']:.1f}x worse)")
 
     print("\nR0 crece al bajar la temperatura, como debe: la celda es mas")
     print("resistiva en frio. El modelo se re-parametriza por temperatura;")

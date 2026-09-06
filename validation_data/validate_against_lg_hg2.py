@@ -38,6 +38,7 @@ from validate_against_panasonic18650pf import (  # noqa: E402
     find_pulses, fit_r0_r1_c1_per_pulse, build_soc_curve)
 from validate_against_osf_molicel import extract_ocv_from_rests  # noqa: E402
 from esc_battery_model import ESCModel, ESCParams  # noqa: E402
+from paper_numbers import record
 
 DATA_FILE = "lg_hg2_25degC_HPPC.csv"
 
@@ -110,6 +111,13 @@ def main():
 
     err = (v_sim - v) * 1000.0
     rmse = float(np.sqrt(np.mean(err ** 2)))
+    record("lg_hg2.rmse_mv", rmse, "mV", "same-session OCV from rest periods")
+    _h = len(err) // 2
+    record("lg_hg2.ecm_second_half_mv",
+           float(np.sqrt(np.mean(err[_h:] ** 2))), "mV",
+           "ECM evaluated on the second half of the trace")
+    record("lg_hg2.max_err_mv", float(np.max(np.abs(err))), "mV",
+           "same-session OCV from rest periods")
     print(f"\nRMSE vs. measured cell: {rmse:.2f} mV | "
           f"max error {np.max(np.abs(err)):.1f} mV")
     print("Reference: 34.34 mV (Panasonic 18650PF), 33.42 mV (Molicel P42A), "
