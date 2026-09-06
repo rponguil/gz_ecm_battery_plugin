@@ -1,14 +1,14 @@
 {
   "lg_hg2.baseline_held_out_mv": {
     "note": "Eq. (1) fitted on the first half, evaluated on the second",
-    "recorded": "2026-09-06T00:28:52Z",
+    "recorded": "2026-09-06T00:47:49Z",
     "source": "validate_vs_linear_baseline.py",
     "unit": "mV",
     "value": 118.593695
   },
   "lg_hg2.baseline_in_sample_mv": {
     "note": "Eq. (1) fitted to the whole trace by least squares",
-    "recorded": "2026-09-06T00:28:52Z",
+    "recorded": "2026-09-06T00:47:49Z",
     "source": "validate_vs_linear_baseline.py",
     "unit": "mV",
     "value": 56.239069
@@ -36,14 +36,14 @@
   },
   "molicel.baseline_held_out_mv": {
     "note": "Eq. (1) fitted on the first half, evaluated on the second",
-    "recorded": "2026-09-06T00:28:53Z",
+    "recorded": "2026-09-06T00:47:49Z",
     "source": "validate_vs_linear_baseline.py",
     "unit": "mV",
     "value": 134.533834
   },
   "molicel.baseline_in_sample_mv": {
     "note": "Eq. (1) fitted to the whole trace by least squares",
-    "recorded": "2026-09-06T00:28:53Z",
+    "recorded": "2026-09-06T00:47:49Z",
     "source": "validate_vs_linear_baseline.py",
     "unit": "mV",
     "value": 105.539239
@@ -71,42 +71,49 @@
   },
   "panasonic.baseline_held_out_mv": {
     "note": "Eq. (1) fitted on the first half, evaluated on the second",
-    "recorded": "2026-09-06T00:28:51Z",
+    "recorded": "2026-09-06T00:47:48Z",
     "source": "validate_vs_linear_baseline.py",
     "unit": "mV",
     "value": 76.193779
   },
   "panasonic.baseline_in_sample_mv": {
     "note": "Eq. (1) fitted to the whole trace by least squares",
-    "recorded": "2026-09-06T00:28:51Z",
+    "recorded": "2026-09-06T00:47:48Z",
     "source": "validate_vs_linear_baseline.py",
     "unit": "mV",
     "value": 36.00341
   },
   "panasonic.capacity_hppc_ah": {
     "note": "HPPC file's own capacity",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "Ah",
     "value": 2.7728
   },
   "panasonic.ecm_second_half_mv": {
     "note": "ECM evaluated on the second half of the trace",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "mV",
     "value": 44.229973
   },
   "panasonic.max_err_mv": {
     "note": "same-session OCV from HPPC rests, constant R0/R1",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "mV",
     "value": 568.41159
   },
+  "panasonic.max_err_separate_session_mv": {
+    "note": "separate-session OCV, constant R0/R1 -- the like-for-like comparison for the worst-case residual",
+    "recorded": "2026-09-06T02:13:06Z",
+    "source": "validate_ocv_provenance.py",
+    "unit": "mV",
+    "value": 475.092295
+  },
   "panasonic.r0_mohm": {
     "note": "median of per-pulse fits at 25 C",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "mOhm",
     "value": 25.408347
@@ -120,21 +127,21 @@
   },
   "panasonic.rmse_mv": {
     "note": "same-session OCV from HPPC rests, constant R0/R1 -- the headline figure quoted in the validation table",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "mV",
     "value": 34.343403
   },
   "panasonic.rmse_separate_session_mv": {
     "note": "C/20 OCV from a different session, constant R0/R1",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "mV",
     "value": 85.735968
   },
   "provenance.factor": {
     "note": "effect of OCV provenance alone, model unchanged",
-    "recorded": "2026-09-06T00:31:14Z",
+    "recorded": "2026-09-06T02:13:06Z",
     "source": "validate_ocv_provenance.py",
     "unit": "x",
     "value": 2.496432

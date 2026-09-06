@@ -197,27 +197,42 @@ before launching.
 
 ## SDF parameters
 
-Same as `LinearBatteryPlugin`: `<battery_name>`, `<voltage>` (optional — defaults to OCV at
-SOC=1 if omitted), `<capacity>` (Ah), `<initial_charge>` (Ah), `<power_load>` (W),
-`<smooth_current_tau>`, `<start_draining>`.
+Two groups: the ones inherited from `LinearBatteryPlugin`, which keep their
+original meaning so that migrating a world is an SDF edit rather than a
+redesign, and the ECM-specific ones.
 
-New (the ECM part):
+### Inherited from LinearBatteryPlugin
 
-| Parameter | Meaning | Units |
-|---|---|---|
-| `<r0>` | Series (instantaneous) resistance | Ohm |
-| `<r1>`, `<c1>` | First polarization branch (`r1` <= 0 disables it) | Ohm, F |
-| `<r2>`, `<c2>` | Optional second polarization branch (`r2` <= 0 disables it) | Ohm, F |
-| `<hysteresis_m>` | Dynamic hysteresis amplitude (0 = disable) | V |
-| `<hysteresis_m0>` | Instantaneous hysteresis amplitude (0 = disable) | V |
-| `<hysteresis_gamma>` | Hysteresis decay rate | — |
-| `<coulombic_efficiency>` | Charging efficiency, (0, 1] | — |
-| `<ocv_point soc="..." voltage="...">` | One point of the OCV(SOC) curve. **At least 2 required, ascending SOC order.** This is what makes the plugin work for any cell — just drop in your own datasheet discharge curve. | — |
-| `<r0_point soc="..." ohm="...">` | Optional SOC-dependent R0 curve (overrides `<r0>`) | —, Ohm |
-| `<r1_point soc="..." ohm="...">` | Optional SOC-dependent R1 curve (overrides `<r1>`) | —, Ohm |
+| Parameter | Meaning | Units | Default |
+|---|---|---|---|
+| `<battery_name>` | Name of the battery this plugin drives | — | **required** |
+| `<capacity>` | Nominal cell capacity | Ah | **required** |
+| `<voltage>` | Initial terminal voltage | V | OCV at SOC = 1 |
+| `<initial_charge>` | Charge at start, clamped to `<capacity>` | Ah | `<capacity>` (SOC = 1) |
+| `<power_load>` | Constant load registered at startup | W | none added |
+| `<smooth_current_tau>` | Time constant of the first-order lag applied to the current demanded by the world's power loads, **before** it reaches the ECM. It shapes the model's input, not its state: the RC branches, hysteresis and coulomb counting all see the smoothed current. Values <= 0 are rejected and replaced by the default. | s | `1.0` |
+| `<start_draining>` | Whether the battery starts discharging immediately | bool | `false` |
 
-See `worlds/ecm_battery_demo.sdf` for a complete working example (LIR18650/NMC parameters,
-same values validated in the companion Python model, see below).
+### ECM-specific
+
+| Parameter | Meaning | Units | Default |
+|---|---|---|---|
+| `<r0>` | Series (instantaneous) resistance | Ohm | `0.05` |
+| `<r1>`, `<c1>` | First polarization branch (`r1` <= 0 disables it) | Ohm, F | `0.0`, `1.0` |
+| `<r2>`, `<c2>` | Optional second polarization branch (`r2` <= 0 disables it) | Ohm, F | `0.0`, `1.0` |
+| `<hysteresis_m>` | Dynamic hysteresis amplitude (0 disables) | V | `0.0` |
+| `<hysteresis_m0>` | Instantaneous hysteresis amplitude (0 disables) | V | `0.0` |
+| `<hysteresis_gamma>` | Hysteresis decay rate | — | `50.0` |
+| `<coulombic_efficiency>` | Charging efficiency, in (0, 1] | — | `1.0` |
+| `<ocv_point soc="..." voltage="...">` | One point of the OCV(SOC) curve. **At least 2 required, ascending SOC order.** This is what makes the plugin work for any cell — drop in your own discharge curve. | —, V | **required** |
+| `<r0_point soc="..." ohm="...">` | Optional SOC-dependent R0 curve; overrides `<r0>` when present | —, Ohm | unset |
+| `<r1_point soc="..." ohm="...">` | Optional SOC-dependent R1 curve; overrides `<r1>` when present | —, Ohm | unset |
+
+Defaults are the values in `src/EscBatteryPlugin.cc`; a disabled RC branch holds
+its current at zero rather than dividing by its time constant, so leaving `r1`
+and `r2` at their defaults gives a pure OCV-plus-series-resistance model.
+
+See `worlds/ecm_battery_demo.sdf` for a complete working example.
 
 ## Relationship to other work in this line of research
 

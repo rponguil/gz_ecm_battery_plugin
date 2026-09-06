@@ -117,6 +117,9 @@ def main():
            "figure quoted in the validation table")
     record("panasonic.max_err_mv", results[1][2], "mV",
            "same-session OCV from HPPC rests, constant R0/R1")
+    record("panasonic.max_err_separate_session_mv", results[0][2], "mV",
+           "separate-session OCV, constant R0/R1 -- the like-for-like "
+           "comparison for the worst-case residual")
     record("panasonic.ecm_second_half_mv", second_half[1], "mV",
            "ECM evaluated on the second half of the trace")
     record("provenance.factor", ra / rb, "x",
