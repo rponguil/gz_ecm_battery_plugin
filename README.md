@@ -255,7 +255,7 @@ See `worlds/ecm_battery_demo.sdf` for a complete working example.
 See `CITATION.cff`. Archived on Zenodo with a permanent DOI:
 
 - **Concept DOI** (always the latest version): [10.5281/zenodo.22311394](https://doi.org/10.5281/zenodo.22311394)
-- **Archived snapshots**: v1.2.0 — [10.5281/zenodo.22435787](https://doi.org/10.5281/zenodo.22435787) · v1.1.0 — [10.5281/zenodo.22408025](https://doi.org/10.5281/zenodo.22408025)
+- **Archived snapshots**: v1.2.1 — [10.5281/zenodo.22442172](https://doi.org/10.5281/zenodo.22442172) · v1.2.0 — [10.5281/zenodo.22435787](https://doi.org/10.5281/zenodo.22435787) · v1.1.0 — [10.5281/zenodo.22408025](https://doi.org/10.5281/zenodo.22408025)
 
 Repository: https://github.com/rponguil/gz_ecm_battery_plugin
 
