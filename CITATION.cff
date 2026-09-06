@@ -1,5 +1,11 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: >-
+  If you use this software, please cite it as below. The author list here is
+  the author list of the SOFTWARE, and is deliberately narrower than that of
+  the accompanying article: the CRediT statement in the article assigns the
+  "Software" role to Ronald Ponguillo-Intriago alone, while the other authors
+  contributed validation, resources, analysis and supervision. To cite the
+  article rather than the code, cite the SoftwareX publication.
 type: software
 title: "gz_ecm_battery_plugin: A Chemistry-Agnostic Equivalent-Circuit Battery Plugin for Gazebo Sim"
 authors:
@@ -29,7 +35,8 @@ abstract: >-
   branches and hysteresis, all declared from SDF so that modelling a different
   cell requires no recompilation. Validated against three independent public
   datasets (Panasonic 18650PF, LG 18650HG2, Molicel INR-21700-P42A) at
-  33-34 mV RMSE, and across -20 to 25 degrees Celsius.
+  33.4-34.3 mV RMSE against 36-106 mV for the simulator's built-in linear
+  model on the same traces, and across -20 to 25 degrees Celsius.
 repository-code: "https://github.com/rponguil/gz_ecm_battery_plugin"
 keywords:
   - gazebo

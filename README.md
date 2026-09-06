@@ -1,5 +1,6 @@
 # gz_ecm_battery_plugin
 
+[![build-and-test](https://github.com/rponguil/gz_ecm_battery_plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/rponguil/gz_ecm_battery_plugin/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22311394.svg)](https://doi.org/10.5281/zenodo.22311394)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -86,7 +87,7 @@ What the model has actually been checked against, so you know where you can lean
 
 | | |
 |---|---|
-| Cells | Panasonic 18650PF (NCA, 2.9 Ah), LG 18650HG2 (NMC, 3.0 Ah) and Molicel INR-21700-P42A (NMC, 4.2 Ah) — three cells, two laboratories. RMSE 33.4 / 34.0 / 34.3 mV, i.e. within 1 mV of each other |
+| Cells | Panasonic 18650PF (NCA, 2.9 Ah) 34.3 mV, LG 18650HG2 (NMC, 3.0 Ah) 34.0 mV, Molicel INR-21700-P42A (NMC, 4.2 Ah) 33.4 mV — three cells, two laboratories, all three RMSE within 1 mV of each other |
 | Temperature | **−20 °C to 25 °C** (five points), RMSE 34–55 mV throughout |
 | Current | up to 6C (Panasonic HPPC) and ±32 A (Molicel GITT) |
 | Cell state | fresh cells |
@@ -95,6 +96,29 @@ Reproduce with `validate_across_temperature.py`. Each temperature is parameteriz
 independently from its own file; the fitted series resistance rises from 25.4 mΩ at 25 °C to
 87.9 mΩ at −20 °C and the usable capacity falls from 2.773 Ah to 2.182 Ah, both recovered
 from the data rather than assumed — the physics comes out right without being put in.
+
+## How much better than the stock plugin?
+
+Measured, not asserted. The same three traces, scored against `LinearBatteryPlugin`'s
+model form (`V = e0 + e1*(1 - q/c) - r*i`) with its three coefficients fitted by least
+squares — which is generous to the baseline, since it minimizes the reported metric
+directly while the ECM parameters come from pulse-relaxation sub-experiments that never
+see it:
+
+| Cell | This plugin | Stock linear | Held out: this plugin | Held out: stock |
+|---|---|---|---|---|
+| Panasonic 18650PF | **34.3 mV** | 36.0 mV | **44.2 mV** | 76.2 mV |
+| LG 18650HG2 | **34.0 mV** | 56.2 mV | **38.0 mV** | 118.6 mV |
+| Molicel INR-21700-P42A | **33.4 mV** | 105.5 mV | **39.8 mV** | 134.5 mV |
+
+"Held out" scores both models on the second half of each trace only, with the baseline's
+coefficients fitted on the first half. On the Panasonic cell the in-sample baseline is
+essentially tied with this plugin; on held-out data the gap opens to 1.7x. Reproduce with
+`validation_data/validate_vs_linear_baseline.py`.
+
+Every number quoted here and in the accompanying paper is written to
+`validation_data/results/paper_numbers.json` by the script that computes it, so the
+documentation and the artifact cannot drift apart silently.
 
 **Outside that envelope accuracy is not established.** In particular: aged or cycled cells,
 temperatures below −20 °C, and real flight discharge profiles (all validation here is
@@ -182,13 +206,15 @@ New (the ECM part):
 | Parameter | Meaning | Units |
 |---|---|---|
 | `<r0>` | Series (instantaneous) resistance | Ohm |
-| `<r1>` | Polarization branch resistance (0 = disable the RC branch) | Ohm |
-| `<c1>` | Polarization branch capacitance | F |
+| `<r1>`, `<c1>` | First polarization branch (`r1` <= 0 disables it) | Ohm, F |
+| `<r2>`, `<c2>` | Optional second polarization branch (`r2` <= 0 disables it) | Ohm, F |
 | `<hysteresis_m>` | Dynamic hysteresis amplitude (0 = disable) | V |
 | `<hysteresis_m0>` | Instantaneous hysteresis amplitude (0 = disable) | V |
 | `<hysteresis_gamma>` | Hysteresis decay rate | — |
 | `<coulombic_efficiency>` | Charging efficiency, (0, 1] | — |
 | `<ocv_point soc="..." voltage="...">` | One point of the OCV(SOC) curve. **At least 2 required, ascending SOC order.** This is what makes the plugin work for any cell — just drop in your own datasheet discharge curve. | — |
+| `<r0_point soc="..." ohm="...">` | Optional SOC-dependent R0 curve (overrides `<r0>`) | —, Ohm |
+| `<r1_point soc="..." ohm="...">` | Optional SOC-dependent R1 curve (overrides `<r1>`) | —, Ohm |
 
 See `worlds/ecm_battery_demo.sdf` for a complete working example (LIR18650/NMC parameters,
 same values validated in the companion Python model, see below).
