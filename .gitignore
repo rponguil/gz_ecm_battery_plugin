@@ -9,6 +9,8 @@ __pycache__/
 # git -- scripts document the DOI/download command instead, see
 # validation_data/*.py docstrings). Fetch them by re-running the scripts.
 validation_data/*.mat
+validation_data/drive_cycles_25degC/
+validation_data/benchmark_step_cost
 validation_data/*.csv
 validation_data/osf_dataset/*.xlsx
 validation_data/osf_dataset/*.csv

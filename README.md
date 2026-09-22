@@ -97,6 +97,46 @@ independently from its own file; the fitted series resistance rises from 25.4 m�
 87.9 mΩ at −20 °C and the usable capacity falls from 2.773 Ah to 2.182 Ah, both recovered
 from the data rather than assumed — the physics comes out right without being put in.
 
+## Does the parameterization transfer to a different kind of load?
+
+Partly, and the part that does not is worth knowing before you trust the model.
+
+`validate_dynamic_profiles.py` takes everything from the 25 °C HPPC session — OCV curve, R0,
+R1, C1 — refits nothing, and runs the model **open loop** (coulomb counting from a full cell,
+no anchoring) over the drive-cycle files of the same cell: US06, UDDS, LA92, HWFET and two
+mixed profiles, 19.8 h reaching 8.1C with regeneration.
+
+| | ECM | `LinearBatteryPlugin` Eq. (1) |
+|---|---|---|
+| RMSE over the whole profile | 23.8–70.2 mV | 27.8–72.6 mV |
+| RMSE over load transients (top decile of \|di/dt\|, mean removed) | **25.2–59.6 mV** | 31.2–78.4 mV |
+
+On aggregate RMSE the two are not separated by this test — nothing like the 1.7–3.4× obtained
+on characterization traces. The reason is that the aggregate is dominated by a **static offset**
+(mean signed error −3 to +47 mV), and the linear model's fitted `r`, having no physical role,
+absorbs it. Score the samples where the load is actually moving and the ECM is better on 6 of
+6 profiles.
+
+The offset itself is diagnostic: the series resistance identified from pulse onsets (25.4 mΩ)
+under-predicts what a continuous dynamic load sees — a single R0 of 32.9–52.9 mΩ would absorb
+it. **Practical guidance:** identify the resistances from a load resembling your intended duty,
+or expect the model to read high. This is the same lesson as the OCV provenance one, along a
+different axis.
+
+## What does it cost to run?
+
+`benchmark_step_cost.cc` — build with
+`g++ -O2 -std=c++17 -I../include benchmark_step_cost.cc -o benchmark_step_cost`:
+
+| Configuration | ns per `Step()` |
+|---|---|
+| 1 RC branch, scalar R0/R1 | 33.3 |
+| 2 RC branches | 39.1 |
+| 2 RC branches + R0(z)/R1(z) splines | 51.5 |
+
+344 bytes per model instance. In the worst configuration that is 0.005 % of a 1 ms physics
+step, measured on an AMD Ryzen 5 7535HS.
+
 ## How much better than the stock plugin?
 
 Measured, not asserted. The same three traces, scored against `LinearBatteryPlugin`'s
