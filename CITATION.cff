@@ -7,15 +7,15 @@ message: >-
   contributed validation, resources, analysis and supervision. To cite the
   article rather than the code, cite the SoftwareX publication.
 type: software
-title: "gz_ecm_battery_plugin: A Chemistry-Agnostic Equivalent-Circuit Battery Plugin for Gazebo Sim"
+title: "gz_ecm_battery_plugin: A Chemistry-Configurable Equivalent-Circuit Battery Plugin for Gazebo Sim"
 authors:
   - family-names: "Ponguillo-Intriago"
     given-names: "Ronald"
     email: "ronald.ponguilloi@ug.edu.ec"
     affiliation: "Facultad de Ciencias Matematicas y Fisicas, Universidad de Guayaquil"
     orcid: "https://orcid.org/0000-0002-7554-8367"
-version: 1.2.1
-date-released: "2026-09-05"
+version: 1.3.0
+date-released: "2026-09-22"
 doi: 10.5281/zenodo.22311394
 identifiers:
   - type: doi
@@ -35,14 +35,19 @@ identifiers:
     description: Archived snapshot of version 1.0.0
 license: MIT
 abstract: >-
-  A chemistry-agnostic Equivalent-Circuit-Model (ECM) battery plugin for Gazebo
-  Sim, implementing Plett's Enhanced Self-Correcting model: a user-supplied
-  non-linear OCV(SOC) curve, series resistance, one or two RC polarization
-  branches and hysteresis, all declared from SDF so that modelling a different
-  cell requires no recompilation. Validated against three independent public
-  datasets (Panasonic 18650PF, LG 18650HG2, Molicel INR-21700-P42A) at
-  33.4-34.3 mV RMSE against 36-106 mV for the simulator's built-in linear
-  model on the same traces, and across -20 to 25 degrees Celsius.
+  A chemistry-configurable Equivalent-Circuit-Model (ECM) battery plugin for
+  Gazebo Sim, implementing Plett's Enhanced Self-Correcting model: a
+  user-supplied non-linear OCV(SOC) curve, series resistance, one or two RC
+  polarization branches and hysteresis, all declared from SDF so that no cell
+  chemistry is compiled into the software. Validated against three independent
+  public datasets (Panasonic 18650PF, LG 18650HG2, Molicel INR-21700-P42A) at
+  33.4-34.3 mV RMSE on characterization traces, against 36-106 mV for the
+  simulator's built-in linear model on the same traces, and across -20 to 25
+  degrees Celsius. Validation in this version also covers transfer to dynamic
+  load profiles the parameterization never saw, where the aggregate advantage
+  over the linear model does not hold and the error is a static offset; the
+  model remains the better of the two at tracking load transients. One model
+  step costs 33-52 ns.
 repository-code: "https://github.com/rponguil/gz_ecm_battery_plugin"
 keywords:
   - gazebo
